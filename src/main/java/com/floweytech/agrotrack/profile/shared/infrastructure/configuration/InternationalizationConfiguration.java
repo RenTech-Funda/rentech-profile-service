@@ -1,0 +1,1 @@
+package com.floweytech.agrotrack.profile.shared.infrastructure.configuration;
