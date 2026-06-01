@@ -5,6 +5,10 @@ import com.floweytech.agrotrack.profile.domain.services.ProfileCommandService;
 import com.floweytech.agrotrack.profile.shared.domain.model.events.UserRegisteredEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +21,13 @@ public class UserRegisteredEventHandler {
         this.profileCommandService = profileCommandService;
     }
 
-    @EventListener
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(value = "profile.queue", durable = "true"),
+            exchange = @Exchange(value = "agrotrack.exchange", type = "direct"),
+            key = "user.registered"
+    ))
     public void on(UserRegisteredEvent event) {
-        logger.info("Handling UserRegisteredEvent for userId: {}", event.userId());
+        logger.info("RabbitMQ - Handling UserRegisteredEvent for userId: {}", event.userId());
 
         var command = new CreateProfileCommand(
                 event.userId(),
