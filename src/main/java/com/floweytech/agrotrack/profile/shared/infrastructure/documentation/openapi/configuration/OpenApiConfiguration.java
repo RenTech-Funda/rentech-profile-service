@@ -5,8 +5,6 @@ import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -43,18 +41,12 @@ public class OpenApiConfiguration {
                         .description("Agrotrack Platform Documentation")
                         .url("https://agrotrack-platform.wiki.github.io/docs"));
 
-        final String securitySchemeName = "bearerAuth";
-
-        openApi.addSecurityItem(new SecurityRequirement()
-                        .addList(securitySchemeName))
-                .servers(List.of(new Server().url("https://agrotrack-web-service.up.railway.app")))
-                .components(new Components()
-                        .addSecuritySchemes(securitySchemeName,
-                                new SecurityScheme()
-                                        .name(securitySchemeName)
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")));
+        // Se configuran los servidores para que Swagger sepa a dónde enviar las peticiones.
+        // Azure como  Localhost por si se necesita probar de manera local.
+        openApi.servers(List.of(
+                new Server().url("https://agrotrack-profile-service-fwfjh7evgrb0dmhg.centralus-01.azurewebsites.net").description("Azure Production"),
+                new Server().url("http://localhost:8082").description("Local Development")
+        ));
 
         return openApi;
     }
