@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read # This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -25,27 +25,27 @@ jobs:
           distribution: 'microsoft'
 
       - name: Build with Maven
-        run: mvn clean package -DskipTests # Cambiado install por package (más rápido y limpio para despliegues)
+        run: mvn clean package -DskipTests
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: 'target/*.jar' # Simplificado para evitar conflictos de workspace
+          path: 'target/*.jar'
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      id-token: write # This is required for requesting the JWT
-      contents: read # This is required for actions/checkout
+      id-token: write
+      contents: read
   
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: java-app
-          path: . # <-- FUERZA a que el JAR se descargue exactamente en la raíz del deploy
+          path: ./artefacto
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'agrotrack-profile-service'
           slot-name: 'Production'
-          package: '*.jar' # Al haber forzado la descarga en ".", buscará cualquier archivo .jar en la raíz con éxito
+          package: './artefacto/*.jar'
