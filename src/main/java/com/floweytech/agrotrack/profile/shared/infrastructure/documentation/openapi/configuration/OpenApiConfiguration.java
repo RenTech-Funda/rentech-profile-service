@@ -43,18 +43,24 @@ public class OpenApiConfiguration {
                         .description("Agrotrack Platform Documentation")
                         .url("https://agrotrack-platform.wiki.github.io/docs"));
 
+        // Se configuran los servidores para que Swagger sepa a dónde enviar las peticiones.
+        // Azure como  Localhost por si se necesita probar de manera local.
         final String securitySchemeName = "bearerAuth";
 
-        openApi.addSecurityItem(new SecurityRequirement()
-                        .addList(securitySchemeName))
-                .servers(List.of(new Server().url("https://agrotrack-web-service.up.railway.app")))
-                .components(new Components()
-                        .addSecuritySchemes(securitySchemeName,
-                                new SecurityScheme()
-                                        .name(securitySchemeName)
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")));
+        openApi
+                .servers(List.of(
+                        new Server().url("agrotrack-api-gateway-auaadra7bfhjasfa.southeastasia-01.azurewebsites.net").description("Azure API Gateway"),
+                        new Server().url("http://localhost:8080").description("Local API Gateway")
+                ))
+                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+                .components(new Components().addSecuritySchemes(
+                        securitySchemeName,
+                        new SecurityScheme()
+                                .name(securitySchemeName)
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")
+                ));
 
         return openApi;
     }
